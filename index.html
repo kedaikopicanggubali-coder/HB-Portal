@@ -121,13 +121,13 @@ function muatDariSheet() {
   const batas = setTimeout(selesai, 15000);
   window[cb] = res => {
     clearTimeout(batas); selesai();
-    if (!res || !res.ok || !Array.isArray(res.units) || !res.units.length) return;
-    PORTAL = rapikan(res.units);
-    simpan('portal_data', JSON.stringify(res.units));
+    if (!res || !res.ok || !Array.isArray(res.data) || !res.data.length) return;
+    PORTAL = rapikan(res.data);
+    simpan('portal_data', JSON.stringify(res.data));
     route(false);
   };
   s.onerror = () => { clearTimeout(batas); selesai(); };
-  s.src = `${API}?action=portal&callback=${cb}&t=${Date.now()}`;
+  s.src = `${API}?action=daftar&callback=${cb}&t=${Date.now()}`;
   document.body.appendChild(s);
 }
 
