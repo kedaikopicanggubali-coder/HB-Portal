@@ -35,7 +35,6 @@
   .back{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:12px;padding:8px 14px;font-weight:700;font-size:15px;min-height:44px;margin-bottom:14px}
   .wrap{padding:18px 16px calc(32px + env(safe-area-inset-bottom))}
   h2{font-family:var(--display);font-weight:800;font-size:20px;margin:6px 0 12px;letter-spacing:-.01em}
-  /* kartu unit */
   .unit{display:flex;align-items:center;gap:16px;width:100%;border:0;text-align:left;border-radius:22px;padding:22px 20px;margin-bottom:14px;min-height:120px;color:var(--ink);box-shadow:0 3px 0 rgba(18,32,26,.12)}
   .unit .ic{width:60px;height:60px;border-radius:16px;background:rgba(255,255,255,.55);display:grid;place-items:center;flex:none}
   .unit .ic svg{width:34px;height:34px}
@@ -43,7 +42,6 @@
   .unit span{font-size:14px;opacity:.85}
   .unit .arr{margin-left:auto;font-size:28px;opacity:.6}
   .unit:active,.app:active{transform:scale(.985)}
-  /* tombol aplikasi */
   .apps{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   .app{background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:16px 14px;min-height:132px;display:flex;flex-direction:column;gap:8px}
   .app .ic{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;color:var(--ink)}
@@ -63,30 +61,31 @@
 <div id="app"></div>
 <script>
 /* =====================================================================
-   DAFTAR APLIKASI — cukup edit bagian ini untuk menambah / mengubah link.
-   ikon: shift | absen | stok | gudang | kopi | order | link
-   url kosong ('') = tombol tampil abu-abu "Link belum diisi".
+   DATA DIAMBIL DARI SHEET "Portal Hungry Bird" (tab Unit & Aplikasi)
+   lewat Apps Script Web App. Edit di sheet → tampil di portal saat dibuka ulang.
+   CADANGAN di bawah hanya dipakai kalau sheet tidak bisa dihubungi
+   dan HP belum pernah menyimpan data.
    ===================================================================== */
-const PORTAL = [
-  { id: 'cafe', nama: 'Cafe', sub: 'Hungry Bird Canggu', warna: 'var(--cafe)', ikon: 'kopi', apps: [
-    { nama: 'Tim Hungry Bird', ket: 'Jadwal shift, istirahat, lembur, cuti', ikon: 'shift', warna: '#FFD54F',
-      url: 'https://kedaikopicanggubali-coder.github.io/tim-hungry-bird/' },
-    { nama: 'Stok HB', ket: 'Stok opname harian & PO WA', ikon: 'stok', warna: '#90CAF9',
-      url: 'https://kedaikopicanggubali-coder.github.io/Stok-Opname-Harian-Hungry-Bird/' },
-    { nama: 'Kartu Stok Gudang', ket: 'Barang masuk / keluar gudang', ikon: 'gudang', warna: '#B0BEC5',
-      url: 'https://kedaikopicanggubali-coder.github.io/kartu-stok-gudang-HB/' },
-    { nama: 'Katalog Kopi', ket: 'Katalog & order biji kopi', ikon: 'kopi', warna: '#BCAAA4',
-      url: 'https://kedaikopicanggubali-coder.github.io/hungry-bird-coffee/' }
+const API = 'https://script.google.com/macros/s/AKfycbyDBYasKBdd7esFeJqFD6uN9F2tMJAs1cyTrdFptMHzdW5_bDWVjdWj2SatsfKZcEpU/exec';
+
+const CADANGAN = [
+  { id: 'cafe', nama: 'Cafe', sub: 'Hungry Bird Canggu', apps: [
+    { nama: 'Tim Hungry Bird', ket: 'Jadwal shift, istirahat, lembur, cuti', ikon: 'shift', warna: '#FFD54F', url: 'https://kedaikopicanggubali-coder.github.io/tim-hungry-bird/' },
+    { nama: 'Stok HB', ket: 'Stok opname harian & PO WA', ikon: 'stok', warna: '#90CAF9', url: 'https://kedaikopicanggubali-coder.github.io/Stok-Opname-Harian-Hungry-Bird/' },
+    { nama: 'Kartu Stok Gudang', ket: 'Barang masuk / keluar gudang', ikon: 'gudang', warna: '#B0BEC5', url: 'https://kedaikopicanggubali-coder.github.io/kartu-stok-gudang-HB/' },
+    { nama: 'Katalog Kopi', ket: 'Katalog & order biji kopi', ikon: 'kopi', warna: '#BCAAA4', url: 'https://hungrybird.coffee/coffeeretail/' }
   ]},
-  { id: 'pabrik', nama: 'Pabrik', sub: 'Roastery & produksi', warna: 'var(--pabrik)', ikon: 'pabrik', apps: [
-    { nama: 'Tim Roastery', ket: 'Istirahat, lembur, cuti', ikon: 'absen', warna: '#FFAB91',
-      url: 'https://gmhungrybird.github.io/tim-roastery-absensi/' },
-    { nama: 'Stok Roastery', ket: 'Stok opname, barang masuk, PO WA', ikon: 'stok', warna: '#90CAF9',
-      url: 'https://kedaikopicanggubali-coder.github.io/stok-roastery-HB/' },
-    { nama: 'OMS', ket: 'Order management', ikon: 'order', warna: '#A5D6A7',
-      url: '' }  // ← isi link OMS di sini
+  { id: 'pabrik', nama: 'Pabrik', sub: 'Roastery & produksi', apps: [
+    { nama: 'Tim Roastery', ket: 'Istirahat, lembur, cuti', ikon: 'absen', warna: '#FFAB91', url: 'https://gmhungrybird.github.io/tim-roastery-absensi/' },
+    { nama: 'Stok Roastery', ket: 'Stok opname, barang masuk, PO WA', ikon: 'stok', warna: '#90CAF9', url: 'https://kedaikopicanggubali-coder.github.io/stok-roastery-HB/' },
+    { nama: 'OMS', ket: 'Order management', ikon: 'order', warna: '#A5D6A7', url: 'https://gmhungrybird.github.io/roastery-oms/admin.html' }
   ]}
 ];
+
+const UNIT_DEFAULT = {
+  cafe:   { warna: 'var(--cafe)',   ikon: 'kopi',   sub: 'Hungry Bird Canggu' },
+  pabrik: { warna: 'var(--pabrik)', ikon: 'pabrik', sub: 'Roastery & produksi' }
+};
 
 const ICON = {
   kopi: '<path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9z"/><path d="M16 11h1.5a2.5 2.5 0 0 1 0 5H16M8 3v3M12 3v3"/>',
@@ -98,11 +97,39 @@ const ICON = {
   order: '<path d="M6 6h15l-1.5 8H8L6 3H3"/><circle cx="9" cy="19" r="1.6"/><circle cx="17" cy="19" r="1.6"/>',
   link: '<path d="M10 14a4 4 0 0 0 6 0l3-3a4 4 0 0 0-6-6l-1 1"/><path d="M14 10a4 4 0 0 0-6 0l-3 3a4 4 0 0 0 6 6l1-1"/>'
 };
-const svg = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICON[k] || ICON.link}</svg>`;
+// "stok cafe" → coba "stok cafe", lalu kata pertama "stok", lalu ikon link
+const ikonKey = k => { k = String(k || '').trim().toLowerCase(); return ICON[k] ? k : (ICON[k.split(/\s+/)[0]] ? k.split(/\s+/)[0] : 'link'); };
+const svg = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICON[ikonKey(k)]}</svg>`;
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const simpan = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
 const ambil = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
 const $app = document.getElementById('app');
+
+// Lengkapi warna/ikon/sub unit yang kosong di sheet
+const rapikan = units => units.map(u => {
+  const d = UNIT_DEFAULT[u.id] || {};
+  return { ...u, warna: u.warna || d.warna || '#CDD3DF', ikon: u.ikon || d.ikon || 'link', sub: u.sub || d.sub || '', apps: u.apps || [] };
+});
+
+// Urutan: data tersimpan di HP (tampil instan) → cadangan. Lalu diperbarui dari sheet.
+let PORTAL = (() => { try { const c = JSON.parse(ambil('portal_data')); if (Array.isArray(c) && c.length) return rapikan(c); } catch (e) {} return rapikan(CADANGAN); })();
+
+function muatDariSheet() {
+  const cb = 'portalCb' + Date.now();
+  const s = document.createElement('script');
+  const selesai = () => { delete window[cb]; s.remove(); };
+  const batas = setTimeout(selesai, 15000);
+  window[cb] = res => {
+    clearTimeout(batas); selesai();
+    if (!res || !res.ok || !Array.isArray(res.units) || !res.units.length) return;
+    PORTAL = rapikan(res.units);
+    simpan('portal_data', JSON.stringify(res.units));
+    route(false);
+  };
+  s.onerror = () => { clearTimeout(batas); selesai(); };
+  s.src = `${API}?action=portal&callback=${cb}&t=${Date.now()}`;
+  document.body.appendChild(s);
+}
 
 function header(judul, sub, kembali) {
   return `<header><div class="in">
@@ -114,10 +141,10 @@ function header(judul, sub, kembali) {
 function beranda() {
   const last = ambil('portal_last'), lu = last && PORTAL.find(u => u.id === last);
   $app.innerHTML = header('Hungry Bird', 'Semua aplikasi tim di satu tempat') + `<main class="wrap">
-    ${lu ? `<a class="terakhir" href="#${lu.id}">Terakhir dibuka: <b>${esc(lu.nama)}</b><span>Buka ›</span></a>` : ''}
+    ${lu ? `<a class="terakhir" href="#${esc(lu.id)}">Terakhir dibuka: <b>${esc(lu.nama)}</b><span>Buka ›</span></a>` : ''}
     <h2>Pilih unit</h2>
-    ${PORTAL.map(u => `<a class="unit" href="#${u.id}" style="background:${u.warna}">
-      <div class="ic">${svg(u.ikon)}</div><div><b>${esc(u.nama)}</b><span>${esc(u.sub)} · ${u.apps.length} aplikasi</span></div><div class="arr">›</div></a>`).join('')}
+    ${PORTAL.map(u => `<a class="unit" href="#${esc(u.id)}" style="background:${esc(u.warna)}">
+      <div class="ic">${svg(u.ikon)}</div><div><b>${esc(u.nama)}</b><span>${esc(u.sub)}${u.sub ? ' · ' : ''}${u.apps.length} aplikasi</span></div><div class="arr">›</div></a>`).join('')}
     <p class="note">Tip: tambahkan halaman ini ke layar utama HP (Share / ⋮ → Tambahkan ke Layar Utama).</p>
   </main>`;
 }
@@ -128,7 +155,7 @@ function unit(u) {
   $app.innerHTML = header(u.nama, u.sub, true) + `<main class="wrap"><div class="apps">
     ${u.apps.map((a, i) => {
       const wide = n % 2 === 1 && i === n - 1 && n > 1 ? ' wide' : '';
-      const isi = `<div class="ic" style="background:${a.warna || '#E3E9E5'}">${svg(a.ikon)}</div>
+      const isi = `<div class="ic" style="background:${esc(a.warna || '#E3E9E5')}">${svg(a.ikon)}</div>
         <div><b>${esc(a.nama)}</b><br><small>${esc(a.url ? a.ket : 'Link belum diisi')}</small></div>`;
       return a.url ? `<a class="app${wide}" href="${esc(a.url)}">${isi}</a>` : `<div class="app kosong${wide}" aria-disabled="true">${isi}</div>`;
     }).join('')}
@@ -136,13 +163,14 @@ function unit(u) {
   document.getElementById('back').onclick = () => { location.hash = ''; };
 }
 
-function route() {
+function route(gulir = true) {
   const id = location.hash.slice(1), u = PORTAL.find(x => x.id === id);
   u ? unit(u) : beranda();
-  window.scrollTo(0, 0);
+  if (gulir) window.scrollTo(0, 0);
 }
-window.addEventListener('hashchange', route);
+window.addEventListener('hashchange', () => route());
 route();
+muatDariSheet();
 </script>
 </body>
 </html>
